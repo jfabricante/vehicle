@@ -367,7 +367,7 @@ class Invoice extends CI_Controller {
 			$this->load->view('include/template', $data);
 	}
 	
-	public function sales_daily_summary_by_dealer_report(){
+	public function sales_daily_summary_by_dealer_pdf(){
 
 		//~ $from_date = '01-OCT-17';
 		//~ $to_date = '31-OCT-17';
