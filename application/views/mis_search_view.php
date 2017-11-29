@@ -12,7 +12,7 @@ $this->load->helper('format_helper');
 					</div>
 				</div>
 				<div class="row">
-					<div class="col-md-7" style="padding: 10px;margin-left: 20px;">
+					<div class="col-md-6" style="padding: 10px;margin-left: 20px;">
 						<form id="form_filters" class="form-horizontal" method="POST" accept-charset="utf-8" action="search">
 							<div class="form-group">
 								<label class="col-sm-2 control-label" for="unput1">Lot Number</label>
@@ -31,6 +31,7 @@ $this->load->helper('format_helper');
 									</select>
 								</div>
 							</div>
+
 							<div class="form-group">
 								<label class="col-sm-2 control-label" for="unput1">Model Name</label>
 								<div class="col-sm-10">
@@ -39,13 +40,37 @@ $this->load->helper('format_helper');
 									</select>
 								</div>
 							</div>
+
+							<!-- <div class="form-group">
+								<label class="col-sm-2 control-label" for="vin_model">Vin Model</label>
+								<div class="col-sm-10">
+									<select class="form-control select2" id="vin_model" name="vin_model" data-live-search="true">
+										<option selected>Nothing Selected</option>
+										<?php foreach ($modelList as $vinModel): ?>
+											<option value="<?php echo $vinModel->PRODUCT_MODEL ?>"><?php echo $vinModel->PRODUCT_MODEL ?></option>
+										<?php endforeach ?>
+									</select>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="model_lot">Model Lot</label>
+								<div class="col-sm-10">
+									<select class="form-control select2" id="model_lot" name="model_lot" data-live-search="true">
+										<option selected>Nothing Selected</option>
+									</select>
+								</div>
+							</div> -->
+
 							<div class="form-group">
 								<div class="col-sm-offset-2">
 									<button style="margin-left: 14px;" class="btn btn-flat btn-danger btn-sm" type="button" name="submit">Search</button>
 								</div>
 							</div>
 						</form>
-					</div>	
+					</div>
+
+						
 				</div>
 				<div class="box-body">
 					
@@ -101,6 +126,8 @@ $this->load->helper('format_helper');
 <script src="<?php echo base_url('resources/plugins/filestyle/bootstrap-filestyle.min.js'); ?>"></script>
 <script>
 	$(document).ready(function() {
+
+		const appUrl = "<?php echo base_url()?>";
 		
 		 $(document).on("focus", ".datemask", function() { 
 			$('.datemask').inputmask('mm/dd/yyyy', {'placeholder' : 'mm/dd/yyyy'});
@@ -245,6 +272,31 @@ $this->load->helper('format_helper');
 				}
 			});
 		});
+
+		/*const $vin_model = $('#vin_model');
+		const $model_lot = $("#model_lot");*/
+
+		// Load the last value
+		/*$vin_model.val('QKR77EE1AY 17').trigger('change');*/
+
+		/*$vin_model.on('change', function() {
+			const $self  = $(this);
+			const $model = $self.val();
+
+			if ($model != 'undefined' && $model != '')
+			{
+				$.post(appUrl + 'mis/ajax_get_model_lot', {PRODUCT_MODEL: $model})
+				.done(function(data) {
+					let result = JSON.parse(data);
+
+					$model_lot.select2({
+						data: result
+					})
+				});
+
+			}
+		});*/
+
 	});
 </script>
 

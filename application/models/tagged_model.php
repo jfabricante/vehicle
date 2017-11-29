@@ -145,7 +145,8 @@ class Tagged_model extends CI_Model {
 					so.reservation_date,
 					so.unit_selling_price + so.tax_value gross_amount,
 					so.line_number,
-					 TRUNC (SYSDATE) - TRUNC(so.reservation_date) aging
+					 TRUNC (SYSDATE) - TRUNC(so.reservation_date) aging,
+					 so.RELEASED_FLAG
 				FROM IPC_SALES_ORDER_V so
 				LEFT JOIN mtl_serial_numbers msn
 				ON so.serial_number = msn.serial_number
@@ -161,7 +162,6 @@ class Tagged_model extends CI_Model {
 					       LEFT JOIN oe_transaction_types_tl ottl
 					          ON ooha.order_type_id = ottl.transaction_type_id
 				WHERE so.SERIAL_NUMBER IS NOT NULL
-				AND (so.RELEASED_FLAG = 'N' OR (so.RELEASED_FLAG is null AND so.customer_id = 11085))
 				";
 		//~ 11085
 		$data = $this->oracle->query($sql);
@@ -263,7 +263,7 @@ class Tagged_model extends CI_Model {
 																15107,
 																11085,
 																17088,
-																15105)  AND ottl.name = 'FLT.Sales Order' THEN 1 ELSE NULL END) FLEET,
+																15105)  AND ottl.name = 'FLT.Sales Order' THEN 1 ELSE NULL END) flt,
 						 COUNT (CASE WHEN cust_account_id NOT IN (14090,
 																14085,
 																14088,
@@ -287,7 +287,8 @@ class Tagged_model extends CI_Model {
 																11085,
 																17088,
 																15105) AND ottl.name != 'FLT.Sales Order' THEN 1 ELSE NULL END) OTHERS,
-						COUNT(*) Total
+						COUNT(*) Total,
+						COUNT(CASE WHEN ooha.attribute3 is not null then 1 else null end) fleet
 						  FROM oe_order_headers_all ooha
 							   LEFT JOIN oe_order_lines_all oola
 									ON ooha.header_id = oola.header_id
@@ -362,7 +363,7 @@ class Tagged_model extends CI_Model {
 															15107,
 															11085,
 															17088,
-															15105)  AND ottl.name = 'FLT.Sales Order' THEN 1 ELSE NULL END) FLEET,
+															15105)  AND ottl.name = 'FLT.Sales Order' THEN 1 ELSE NULL END) FLT,
 					 COUNT (CASE WHEN cust_account_id NOT IN (14090,
 															14085,
 															14088,
@@ -386,7 +387,8 @@ class Tagged_model extends CI_Model {
 															11085,
 															17088,
 															15105) AND ottl.name != 'FLT.Sales Order' THEN 1 ELSE NULL END) OTHERS,
-					COUNT(*) Total
+					COUNT(*) Total,
+					COUNT(CASE WHEN ooha.attribute3 is not null then 1 else null end) fleet
 					  FROM oe_order_headers_all ooha
 						   LEFT JOIN oe_order_lines_all oola
 								ON ooha.header_id = oola.header_id

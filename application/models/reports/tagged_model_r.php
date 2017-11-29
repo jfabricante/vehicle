@@ -18,47 +18,47 @@ class Tagged_Model_r extends CI_Model {
 			$and = "";
 		}
 		
-		$sql = "  SELECT hcca.cust_account_id,
-						 MAX(NVL (hp.party_name || ' - ' || hcca.account_name, hp.party_name))    account_name,
-						 MAX(msib.attribute9 || ' ' || oola.attribute1) sales_model,
-						 MAX(ooha.order_number) order_number,
-						 MAX(oola.line_number) line_number,
-						 MAX(msn.attribute2)                            chassis_number,
-						 MAX(msn.attribute3)                            engine_number,
-						 msn.serial_number                        cs_number,
-						 MAX(msn.attribute6)                            key_number,
-						 MAX(msn.lot_number) lot_number,
-						 MAX(msib.attribute8)                           body_color,
-						 MAX(msn.d_attribute20)                         tagged_date,
-						 MAX(ooha.attribute3)                           fleet_name,
-						 MAX(oola.unit_selling_price + oola.tax_value)  amount,
-						 MAX(rt.name)                                   payment_terms,
-						 MAX(TRUNC (SYSDATE) - TRUNC (msn.d_attribute20)) aging,
-						 MAX(msn.attribute1)                            csr_number,
-						 COUNT(msn.serial_number) cnt,
-						 COUNT(CASE WHEN msn.attribute1 IS NULL THEN NULL ELSE 1 END) cnt_csr
-					FROM oe_order_headers_all ooha
-						 LEFT JOIN oe_order_lines_all oola ON ooha.header_id = oola.header_id
-						 LEFT JOIN mtl_reservations mr
-							ON oola.line_id = mr.demand_source_line_id
-						 LEFT JOIN mtl_serial_numbers msn
-							ON mr.reservation_id = msn.reservation_id
-						 LEFT JOIN hz_cust_accounts_all hcca
-							ON oola.sold_to_org_id = hcca.cust_account_id
-						 LEFT JOIN hz_parties hp ON hcca.party_id = hp.party_id
-						 LEFT JOIN mtl_system_items_b msib
-							ON oola.inventory_item_id = msib.inventory_item_id
-							   AND oola.ship_from_org_id = msib.organization_id
-						 LEFT JOIN oe_transaction_types_tl ottl
-							ON ooha.order_type_id = ottl.transaction_type_id
-						 LEFT JOIN ra_terms_tl rt ON oola.payment_term_id = rt.term_id
-						 LEFT JOIN oe_order_holds_all hold ON oola.line_id = hold.line_id
-				   WHERE     1 = 1
-						 AND oola.ship_from_org_id = 121
-						 AND NVL (hold.RELEASED_FLAG, NVL (oola.ATTRIBUTE20, 'N')) = 'N'
-						 AND msn.serial_number IS NOT NULL
-						 " . $and . "
-				GROUP BY ROLLUP (hcca.cust_account_id, msn.serial_number  )";
+		$sql = "SELECT hcca.cust_account_id,
+					 MAX(NVL (hp.party_name || ' - ' || hcca.account_name, hp.party_name))    account_name,
+					 MAX(msib.attribute9 || ' ' || oola.attribute1) sales_model,
+					 MAX(ooha.order_number) order_number,
+					 MAX(oola.line_number) line_number,
+					 MAX(msn.attribute2)                            chassis_number,
+					 MAX(msn.attribute3)                            engine_number,
+					 msn.serial_number                        cs_number,
+					 MAX(msn.attribute6)                            key_number,
+					 MAX(msn.lot_number) lot_number,
+					 MAX(msib.attribute8)                           body_color,
+					 MAX(msn.d_attribute20)                         tagged_date,
+					 MAX(ooha.attribute3)                           fleet_name,
+					 MAX(oola.unit_selling_price + oola.tax_value)  amount,
+					 MAX(rt.name)                                   payment_terms,
+					 MAX(TRUNC (SYSDATE) - TRUNC (msn.d_attribute20)) aging,
+					 MAX(msn.attribute1)                            csr_number,
+					 COUNT(msn.serial_number) cnt,
+					 COUNT(CASE WHEN msn.attribute1 IS NULL THEN NULL ELSE 1 END) cnt_csr
+				FROM oe_order_headers_all ooha
+					 LEFT JOIN oe_order_lines_all oola ON ooha.header_id = oola.header_id
+					 LEFT JOIN mtl_reservations mr
+						ON oola.line_id = mr.demand_source_line_id
+					 LEFT JOIN mtl_serial_numbers msn
+						ON mr.reservation_id = msn.reservation_id
+					 LEFT JOIN hz_cust_accounts_all hcca
+						ON oola.sold_to_org_id = hcca.cust_account_id
+					 LEFT JOIN hz_parties hp ON hcca.party_id = hp.party_id
+					 LEFT JOIN mtl_system_items_b msib
+						ON oola.inventory_item_id = msib.inventory_item_id
+						   AND oola.ship_from_org_id = msib.organization_id
+					 LEFT JOIN oe_transaction_types_tl ottl
+						ON ooha.order_type_id = ottl.transaction_type_id
+					 LEFT JOIN ra_terms_tl rt ON oola.payment_term_id = rt.term_id
+					 LEFT JOIN oe_order_holds_all hold ON oola.line_id = hold.line_id
+			   WHERE     1 = 1
+					 AND oola.ship_from_org_id = 121
+					 AND NVL (hold.RELEASED_FLAG, NVL (oola.ATTRIBUTE20, 'N')) = 'N'
+					 AND msn.serial_number IS NOT NULL
+					 " . $and . "
+			GROUP BY ROLLUP (hcca.cust_account_id, msn.serial_number  )";
 		
 		$data = $this->oracle->query($sql);
 		return $data->result();

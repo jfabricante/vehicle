@@ -161,4 +161,26 @@ class Mis_model extends CI_Model {
 		$rows = $data->result();
 		return $rows[0];
 	}
+
+	public function fetchModelList()
+	{
+		$query = $this->oracle->select('PRODUCT_MODEL')
+				->from('IPC.IPC_VE_VIN_MODEL')
+				->order_by('PRODUCT_MODEL')
+				->where('STATUS = 1')
+				->get();
+
+		return $query->result();
+	}
+
+	public function fetchDistinctLot($params)
+	{
+		$query = $this->oracle->distinct('LOT_NO')
+				->select('LOT_NO')
+				->order_by('LOT_NO', 'ASC')
+				->where($params)
+				->get('IPC.IPC_VE_VIN_ENGINE');
+
+		return $query->result();
+	}
 }

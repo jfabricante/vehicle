@@ -16,6 +16,12 @@ class Wholesale extends CI_Controller {
 		$this->load->view('include/template',$data);
 	}
 	
+	public function ws_executive_report_form_excel(){
+		$data['content'] = 'report_form/ws_executive_report_form_excel';
+		$data['title'] = 'Executive Report Form';
+		$this->load->view('include/template',$data);
+	}
+	
 	public function ws_executive_report(){
 		//~ die();
 		//~ $prev_start_date = '01-OCT-17';
@@ -64,7 +70,7 @@ class Wholesale extends CI_Controller {
 		$ctr = 0;
 		$cnt = 0;
 		foreach($rows as $row){
-			
+			$row = (object)$row;
 			if($cnt == 35){
 				//~ $data .= '<br pagebreak="true" />';
 				$cnt = 0;
@@ -388,5 +394,117 @@ class Wholesale extends CI_Controller {
 		
 		$this->filename = 'report.pdf';
 		$pdf->Output($this->filename,'I');
+	}
+	
+	public function ws_executive_excel()
+	{
+		ini_set('memory_limit', '-1');
+        ini_set('max_execution_time', 3600);
+		
+		$prev_start_date = date('d-M-y', strtotime($this->input->post('prev_from')));
+		$prev_end_date = date('d-M-y', strtotime($this->input->post('prev_to')));
+		$curr_start_date = date('d-M-y', strtotime($this->input->post('curr_from')));
+		$curr_end_date = date('d-M-y', strtotime($this->input->post('curr_to')));
+		$working_days1 = $this->input->post('prev_wd');
+		$working_days2 = $this->input->post('curr_wd');
+		
+		
+		
+		$params = array(
+						$prev_start_date,
+						$prev_end_date,
+						$curr_start_date,
+						$curr_end_date
+					);
+		
+		$data = $this->wholesale_model->get_ws_executive_summary_excel($params);
+		//~ $row_span = $this->wholesale_model->get_ws_executive_summary_count($params);
+		$end_date_invoice = $this->wholesale_model->get_invoiced_for_curr_day($curr_end_date);
+		
+		
+		 
+		//~ $data = $this->tagged_model->for_tagged_report();
+
+		// echo "<pre>";
+		// print_r($data);
+		// echo "</pre>";
+		// exit();
+		$this->load->library('excel');
+
+      	$styleArray = array(
+        	'borders' => array(
+	            'allborders' => array(
+	                'style' => PHPExcel_Style_Border::BORDER_THIN
+	            )
+	        ),
+			
+	        'font'  => array(
+	              'bold'  => false,
+	              'size'  => 8,
+	              'name'  => 'Calibri'
+	        ),
+
+	        'alignment' => array(
+	          	'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+	      	)
+
+    	);
+		
+    	$styleArray_header = array(
+        	'borders' => array(
+	            'allborders' => array(
+	                'style' => PHPExcel_Style_Border::BORDER_THIN
+	            )
+	        ),
+
+	        'font'  => array(
+	              'bold'  => true,
+	              'size'  => 10,
+	              'name'  => 'Calibri'
+	        ),
+			
+	        'alignment' => array(
+	          	'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+	      	)
+    	);
+
+      	$row = count($data) + 4;
+      	$objPHPExcel = PHPExcel_IOFactory::load("././resources/report_template/executive_report.xlsx");
+      	$objPHPExcel->setActiveSheetIndex(0);
+		
+		$objPHPExcel->getActiveSheet()->setCellValue('C3', $working_days1);
+		$objPHPExcel->getActiveSheet()->setCellValue('D3', $working_days2);
+		$objPHPExcel->getActiveSheet()->setCellValue('E3', $working_days2);
+		$objPHPExcel->getActiveSheet()->setCellValue('C4', STRTOUPPER(date('M d',strtotime($prev_start_date)).'-'.date('d',strtotime($prev_end_date))));
+		$objPHPExcel->getActiveSheet()->setCellValue('D4', STRTOUPPER(date('M d',strtotime($curr_start_date)).'-'.date('d',strtotime($curr_end_date))));
+      	$objPHPExcel->getActiveSheet()->fromArray($data,null, 'A5');
+      	
+      	//~ $objPHPExcel->getActiveSheet()->getStyle('A1:'.'H1')->applyFromArray($styleArray_header);
+      	$objPHPExcel->getActiveSheet()->getStyle('A5:'.'H'.$row)->applyFromArray($styleArray);
+      	//~ $objPHPExcel->getActiveSheet()->getStyle('J2:J'.$row)->getNumberFormat()->setFormatCode('00000000000000');
+      	//~ $objPHPExcel->getActiveSheet()->setCellValueExplicit('G'.$ctr, $row->part_no,PHPExcel_Cell_DataType::TYPE_STRING);
+      	//~ $objPHPExcel->getActiveSheet()->getStyle('J2:J'.$row)->getNumberFormat()->setFormatCode('0000');
+
+      	//~ $objPHPExcel->getActiveSheet()->getStyle('S2:S'.$row)->getNumberFormat()->setFormatCode('#,##0.00');
+      	$objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
+      	//~ $objWriter->save('././resources/report_template/tempfile.xls');
+
+      	$filename='executive_report.xlsx'; //save our workbook as this file name
+
+      	//~ header('Content-Type: application/vnd.ms-excel'); //mime type
+
+      	//~ header('Content-Disposition: attachment;filename="'.$filename.'"'); //tell browser what's the file name
+
+      	//~ header('Cache-Control: max-age=0'); //no cache
+
+      	//~ $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+
+      	//~ $objWriter->save('php://output');
+      	
+      	header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+		header('Content-Disposition: attachment;filename="'.$filename.'"');
+		header('Cache-Control: max-age=0');
+		$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+		$objWriter->save('php://output');
 	}
 }

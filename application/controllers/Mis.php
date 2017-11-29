@@ -45,6 +45,7 @@ class Mis extends CI_Controller {
 		//~ $data['model_name'] = $model_name;
 		
 		//print_r($data);
+		$data['modelList'] = $this->mis_model->fetchModelList();
 		
 		$data['box_body'] = NULL;
 		$data['content'] = 'mis_search_view';
@@ -537,4 +538,29 @@ class Mis extends CI_Controller {
 		
 		return $error;
 	}
+
+	public function ajax_get_model_lot()
+	{
+		$model_lot = $this->mis_model->fetchDistinctLot($this->input->post());
+
+		$config = array();
+
+		foreach ($model_lot as $lot)
+		{
+			$config[] = array(
+					'id'   => $lot->LOT_NO,
+					'text' => $lot->LOT_NO
+				);
+		}
+
+		echo json_encode($config);
+	}
+
+	protected function _showVars($var)
+	{
+		echo '<pre>';
+		print_r($var);
+		echo '</pre>';
+	}
+
 }

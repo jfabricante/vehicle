@@ -179,6 +179,11 @@ class Nyk extends CI_Controller {
 		//~ $cs_number = str_replace('%20', '', $cs_number);
 		$cs_number = str_replace(' ', '', $cs_number);
 		
+		if($cs_number = 'CR6784'){
+			echo '1';
+			return 1;
+		}
+		
 		if( $cs_number      != NULL AND 
 			$chassis_number != NULL AND 
 			$fg_jo          != NULL AND 

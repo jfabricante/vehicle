@@ -336,6 +336,7 @@
 						<li class="<?php echo ($this->uri->uri_string() == 'tagged/report_oc') ? 'active' : ''; ?>"><a href="<?php echo base_url('tagged/report_oc'); ?>"><i class="fa fa-circle-o"></i>Order Confirmed</a></li>
 						<li class="<?php echo ($this->uri->uri_string() == 'report/invoiced_units_form') ? 'active' : ''; ?>"><a href="<?php echo base_url('report/invoiced_units_form'); ?>"><i class="fa fa-circle-o"></i>Invoiced Units</a></li>
 						<li class="<?php echo ($this->uri->uri_string() == 'wholesale/ws_executive_report_form') ? 'active' : ''; ?>"><a href="<?php echo base_url('wholesale/ws_executive_report_form'); ?>"><i class="fa fa-circle-o"></i>Executive Report</a></li>
+						<li class="<?php echo ($this->uri->uri_string() == 'wholesale/ws_executive_report_form_excel') ? 'active' : ''; ?>"><a href="<?php echo base_url('wholesale/ws_executive_report_form_excel'); ?>"><i class="fa fa-circle-o"></i>Executive Report Excel</a></li>
 						<li class="<?php echo ($this->uri->segment(2) == 'ws_summary_report') ? 'active' : ''; ?>"><a target="_blank" href="<?php echo base_url('wholesale/ws_summary_report/').date('Y'); ?>"><i class="fa fa-circle-o"></i>Wholesale Summary</a></li>
 						<li class="<?php echo ($this->uri->uri_string() == 'report/inventory_management') ? 'active' : ''; ?>"><a href="<?php echo base_url('report/inventory_management'); ?>"><i class="fa fa-circle-o"></i>Inventory Management Report</a></li>
 <!--
